@@ -8,4 +8,4 @@ class Invoice(BaseModel):
     date: datetime
     services: list[PyObjectId]
     notes: str = Field(min_length=10, max_length=1000)
-    total: float
+    total: float = Field(..., ge=0)
