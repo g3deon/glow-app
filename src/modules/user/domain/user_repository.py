@@ -6,7 +6,7 @@ from src.modules.user.domain.user import User
 class UserRepository(ABC):
 
     @abstractmethod
-    async def create_user(self, user: User) -> User:
+    async def create_user(self, user: User) -> str:
         pass
 
     @abstractmethod

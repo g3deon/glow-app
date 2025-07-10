@@ -23,5 +23,6 @@ class MongoDB:
             await self.client.close()
 
     async def insert(self, colletion : str , inserted_data : dict[str,any]):
-        await self.database[colletion].insert_one(inserted_data)
+        query = await self.database[colletion].insert_one(inserted_data)
+        return query.inserted_id
 
