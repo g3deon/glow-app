@@ -1,6 +1,15 @@
+from enum import IntFlag, IntEnum, auto
 from pydantic import BaseModel,Field,EmailStr
 from typing import Optional
 from src.lib.py_object_id import PyObjectId
+
+class UserFlag(IntFlag):
+    ACTIVE = auto()
+    INACTIVE = auto()
+
+class Plan(IntEnum):
+    BASIC = auto()
+    PREMIUM = auto()
 
 
 class User(BaseModel):
@@ -13,3 +22,4 @@ class User(BaseModel):
     accent_color: int = Field(ge=0, le=16777215)
     flags: int
     hashed_password: str = Field(min_length=8)
+    plan: Plan = Field(default=Plan.BASIC)
