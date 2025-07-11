@@ -11,13 +11,13 @@ class MongoRepository(UserRepository):
     async def create_user(self, user: User) -> str:
         try:
             await self.db.connect()
-            inserted_user = await self.db.insert('users',user.model_dump())
+            inserted_user = await self.db.insert('users',user.model_dump(exclude=user.id))
             return inserted_user
 
         except UserCreationError:
             raise UserCreationError
         finally:
-            await self.db.close()
+            self.db.close()
 
     async def get_all(self):
         pass
