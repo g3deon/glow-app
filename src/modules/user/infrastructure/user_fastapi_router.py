@@ -5,7 +5,7 @@ from src.modules.user.domain.user import User
 from src.modules.user.domain.user_errors import UserCreationError
 from src.modules.user.infrastructure.user_mongo_repository import MongoRepository
 
-user_routes = APIRouter()
+user_routes = APIRouter(tags=["Users"])
 
 
 def get_user_service():

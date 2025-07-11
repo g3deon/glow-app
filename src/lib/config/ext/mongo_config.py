@@ -18,11 +18,11 @@ class MongoDB:
     async def connect(self):
         return await self.client.aconnect()
 
-    async def close(self):
+    def close(self):
         if self.client:
-            await self.client.close()
+             self.client.close()
 
-    async def insert(self, colletion : str , inserted_data : dict[str,any]):
+    async def insert(self, colletion : str , inserted_data : dict[str,any]) -> str:
         query = await self.database[colletion].insert_one(inserted_data)
-        return query.inserted_id
+        return str(query.inserted_id)
 
