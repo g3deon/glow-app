@@ -1,3 +1,4 @@
+from src.lib.py_object_id import PyObjectId
 from src.modules.user.domain.user import User
 from src.modules.user.domain.user_repository import UserRepository
 
@@ -14,18 +15,18 @@ class UserService:
         return await self.user_repository.get_all()
 
 
-    async def get_user_by_id(self, user_id: str) -> User:
-        return await self.user_repository.get_user_by_id(user_id)
+    async def get_user_by_id(self, user_id: PyObjectId) -> User:
+        return await self.user_repository.get_by_id(user_id)
 
 
     async def get_user_by_username(self, username: str) -> User:
-        return await self.user_repository.get_user_by_username(username)
+        return await self.user_repository.get_by_username(username)
 
 
     async def get_user_by_email(self, email: str) -> User:
-        return await self.user_repository.get_user_by_email(email)
+        return await self.user_repository.get_by_email(email)
 
 
-    async def delete(self, user_id: str) -> bool:
+    async def delete(self, user_id: PyObjectId) -> bool:
         return await self.user_repository.delete(user_id)
 
