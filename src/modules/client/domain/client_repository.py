@@ -9,17 +9,17 @@ class ClientRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, id:PyObjectId) -> Optional[Client]:
+    def get_by_id(self, identification: PyObjectId) -> Optional[Client]:
         pass
 
     @abstractmethod
-    def create(self, client:Client) -> Client:
+    def create(self, client: Client) -> Client:
         pass
 
     @abstractmethod
-    def update(self, id: PyObjectId, client:Client, update_field: list[str]) -> Optional[Client]:
+    def update(self, identification: PyObjectId, client:Client, update_field:list[str]) -> Optional[Client]:
         pass
 
     @abstractmethod
-    def delete(self, id:PyObjectId):
+    def delete(self, identification: PyObjectId) -> bool:
         pass
