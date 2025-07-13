@@ -1,6 +1,6 @@
 from typing import List
 
-from src.lib.config.ext.mongo_config import MongoDB
+from src.lib.config.ext.mongo_config import MongoConnection
 from src.lib.py_object_id import PyObjectId
 from src.modules.user.domain.user import User
 from src.modules.user.domain.user_errors import UserCreationError, UserFindError
@@ -8,15 +8,13 @@ from src.modules.user.domain.user_repository import UserRepository
 
 
 class MongoRepository(UserRepository):
-    def __init__(self, db = MongoDB()):
+    def __init__(self, db = MongoConnection()):
         self.db = db
 
     async def create_user(self, user: User) -> str:
-        try:
-            inserted_user = await self.db.insert('users',user.model_dump(exclude=user.id))
-            return inserted_user
-        except UserCreationError:
-            raise UserCreationError
+        async with MongoConnection('user') as mongo:
+
+
 
     async def get_all(self) -> list[User]:
         try:
