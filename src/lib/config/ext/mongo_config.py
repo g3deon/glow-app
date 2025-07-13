@@ -1,83 +1,67 @@
 import asyncio
-from typing import List, Any
-
+from typing import List, Any, Coroutine, Mapping
 from bson import ObjectId
 from fastapi import HTTPException
 from pymongo import AsyncMongoClient
 from dotenv import load_dotenv
 import os
-
 from pymongo.errors import PyMongoError
-
 from src.lib.py_object_id import PyObjectId
 
 load_dotenv()
-MONGO_URI = os.getenv("MONGO_URI")
-MONGO_DB = os.getenv("MONGO_DATABASE")
 
-class MongoDB:
-    def __init__(self):
-        if not MONGO_URI:
-            raise Exception('Mongo URI not set')
-        self.client = AsyncMongoClient(MONGO_URI)
-        self.database = self.client[MONGO_DB]
+class MongoConnection:
+    def __init__(self,collection: str):
+        uri = os.getenv("MONGO_URI")
+        database = os.getenv("MONGO_DATABASE")
+        client = AsyncMongoClient(uri)
+
+        self.client = client
+        self.collection = client[database][collection]
 
     @staticmethod
     def parse_id(entity: dict[str, Any]) -> str:
         parsed_id = entity['id'] = str(entity.pop('_id'))
         return parsed_id
 
-    async def connect(self):
-        return await  self.client.aconnect()
+    async def __aenter__(self):
+        return self
 
-    async def close(self):
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         if self.client:
-           return await self.client.close()
+            await self.client.close()
 
-    async def insert(self, colletion : str , inserted_data : dict[str,any]) -> str:
-        query = await self.database[colletion].insert_one(inserted_data)
-        return str(query.inserted_id)
+    async def get_all(self, page: int, page_size: int , filter_query: dict = None)  -> dict
+        if page < 1:
+            page = 1
+        if page_size < 1 or page_size > 25:
+            page_size = 10
 
-    async def find_all(self, collection: str, model):
-        entities = []
+        skip = (page -1) * page_size
+        cursor =  self.collection.find(filter_query).skip(skip).limit(page_size)
+        total_documents = await self.collection.count_documents(filter_query)
+        docs = await cursor.to_list(length=page_size)
+        total_pages = (total_documents + page_size - 1 ) // page_size
 
-        async for entity in self.database[collection].find():
-            self.parse_id(entity)
-            entities.append(model(**entity))
-        if len(entities) < 1:
-            raise HTTPException(status_code=404, detail='colletion Empty')
-        return entities
+        for doc in docs:
+            self.parse_id(doc)
 
-    async def find_one_with_value(self, collection, value_to_find, value, model):
-        try:
-            if value_to_find == "_id" and not isinstance(value, ObjectId):
-                value = ObjectId(str(value))
+        return {
+            "total_pages": total_pages,
+            "results": docs
+        }
 
-            found = await self.database[collection].find_one({value_to_find : value})
-            if not found:
-                raise ValueError('not found')
-            print(found)
-            found = dict(found)
-            self.parse_id(found)
-            result = model(**found)
-            return result
+    async def create(self, inserted_data : dict[str,Any]) -> dict :
+        result = await self.collection.insert_one(inserted_data)
+        return {'id': str(result.inserted_id)}
 
-        except Exception as e:
-            raise HTTPException(status_code=404, detail=f'str(e) {value_to_find} {type(value)} not found ')
+    async def find_by_query(self, query: dict) -> dict:
+        if '_id' in query and isinstance(query["_id"],str):
+            query["_id"] = ObjectId(query["_id"])
+        result = await self.collection.find_one(query)
+        return result
 
-    async def delete_document(self, collection : str ,document_id: PyObjectId) -> bool:
-        try:
-            if  not isinstance(document_id, ObjectId):
-                document_id = ObjectId(str(document_id))
 
-            result = await self.database[collection].delete_one({'_id': document_id})
-            if result.deleted_count == 1:
-                return True
-            else:
-                return False
-        except PyMongoError as e:
 
-            print(f"Error al eliminar documento en '{collection}': {e}")
-            return False
 
-mongo_instance = MongoDB()
+
