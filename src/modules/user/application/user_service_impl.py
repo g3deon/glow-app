@@ -7,8 +7,8 @@ class UserService:
     def __init__(self, user_repository : UserRepository):
         self.user_repository = user_repository
 
-    async def create_user(self, user: User) -> str:
-        return await self.user_repository.create_user(user)
+    async def create(self, user: User) -> User:
+        return await self.user_repository.create(user)
 
 
     async def get_all(self):
