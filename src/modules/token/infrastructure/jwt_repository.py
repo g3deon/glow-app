@@ -23,17 +23,13 @@ class JWTRepository(TokenRepository):
     async def decode_token(self, token) -> dict:
         try:
             payload = jwt.decode(token,self.key)
-
             return dict(payload.claims)
         except DecodeError as e:
             raise Exception(f'Token is invalid {e}')
 
     async def generate_token(self, data: dict) -> str:
-
         to_encode = data.copy()
-        header = {"alg": ALGORITHM,"typ": "JWT"}
-        claims = {"iss": ISS, 'user' : 'erloco'}
+        header = {"alg": ALGORITHM,}
         claims_test = dict(Token(exp=EXP, data=to_encode))
-
         return jwt.encode(header, claims_test,self.key)
 

@@ -54,11 +54,14 @@ class MongoConnection:
         return {'_id': str(result.inserted_id)}
 
     async def find_by_query(self, query: dict) -> dict:
-        if '_id' in query and isinstance(query["_id"],str):
-            query["_id"] = ObjectId(query["_id"])
-        result = await self.collection.find_one(query)
-        self.parse_id(result)
-        return result
+        try:
+            if '_id' in query and isinstance(query["_id"],str):
+                query["_id"] = ObjectId(query["_id"])
+            result = await self.collection.find_one(query)
+            self.parse_id(result)
+            return result
+        except Exception as e:
+            raise e
 
 
 
