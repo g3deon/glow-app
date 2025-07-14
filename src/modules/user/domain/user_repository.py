@@ -27,7 +27,7 @@ class UserRepository(ABC):
         pass
 
     @abstractmethod
-    async def delete(self, user_id: PyObjectId) -> bool:
+    async def delete(self, user_id: PyObjectId) -> dict:
         pass
 
 

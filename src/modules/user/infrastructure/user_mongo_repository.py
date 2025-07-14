@@ -46,9 +46,9 @@ class UserMongoRepository(UserRepository):
             raise UserFindError
 
 
-    async def delete(self, user_id: PyObjectId) -> bool:
+    async def delete(self, user_id: PyObjectId) -> dict:
         try:
-            user_from_db = await self.db.delete_document('users', user_id)
+            user_from_db = await self.db.delete(user_id)
             return user_from_db
         except UserFindError:
             raise UserFindError

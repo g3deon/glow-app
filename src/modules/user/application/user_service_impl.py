@@ -33,6 +33,6 @@ class UserService:
         return await self.user_repository.get_by_email(email)
 
 
-    async def delete(self, user_id: PyObjectId) -> bool:
+    async def delete(self, user_id: PyObjectId) -> dict:
         return await self.user_repository.delete(user_id)
 
