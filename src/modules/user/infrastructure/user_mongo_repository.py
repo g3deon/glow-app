@@ -6,7 +6,7 @@ from src.modules.user.domain.user_errors import UserCreationError, UserFindError
 from src.modules.user.domain.user_repository import UserRepository
 
 
-class MongoRepository(UserRepository):
+class UserMongoRepository(UserRepository):
     def __init__(self, db = MongoConnection('users')):
         self.db = db
 
@@ -27,24 +27,21 @@ class MongoRepository(UserRepository):
 
 
     async def get_by_username(self, username: str) -> User:
-        try:
-            user = await self.db.find_one_with_value('users', 'username', username, User)
-            return user
-        except UserFindError:
-            raise UserFindError
+       async with MongoConnection('users') as mongo:
+           return await mongo.find_by_query({'username': username})
+
 
     async def get_by_id(self, user_id: PyObjectId) -> User:
         try:
-            print(f"user_id type: {type(user_id)}")
-            user_from_db = await self.db.find_one_with_value('users','_id', user_id, User)
-            return user_from_db
+            async with MongoConnection('users') as mongo:
+               return await mongo.find_by_query({'_id': user_id})
         except UserFindError:
             raise UserFindError
 
     async def get_by_email(self, email: str) -> User:
         try:
-            user_from_db = await self.db.find_one_with_value('users', 'email', email, User)
-            return user_from_db
+            async with MongoConnection('users') as mongo:
+                return await mongo.find_by_query({'email': email})
         except UserFindError:
             raise UserFindError
 
