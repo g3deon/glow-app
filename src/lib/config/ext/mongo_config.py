@@ -1,12 +1,9 @@
-import asyncio
-from typing import List, Any, Coroutine, Mapping
+from typing import Any
 from bson import ObjectId
-from fastapi import HTTPException
 from pymongo import AsyncMongoClient
 from dotenv import load_dotenv
 import os
-from pymongo.errors import PyMongoError
-from src.lib.py_object_id import PyObjectId
+
 
 load_dotenv()
 
@@ -31,11 +28,13 @@ class MongoConnection:
         if self.client:
             await self.client.close()
 
-    async def get_all(self, page: int, page_size: int , filter_query: dict = None)  -> dict
+    async def get_all(self, page: int = 1, page_size: int = 10, filter_query: dict = None)  -> dict:
         if page < 1:
             page = 1
         if page_size < 1 or page_size > 25:
             page_size = 10
+
+        filter_query = filter_query or {}
 
         skip = (page -1) * page_size
         cursor =  self.collection.find(filter_query).skip(skip).limit(page_size)
@@ -45,7 +44,6 @@ class MongoConnection:
 
         for doc in docs:
             self.parse_id(doc)
-
         return {
             "total_pages": total_pages,
             "results": docs
@@ -53,12 +51,13 @@ class MongoConnection:
 
     async def create(self, inserted_data : dict[str,Any]) -> dict :
         result = await self.collection.insert_one(inserted_data)
-        return {'id': str(result.inserted_id)}
+        return {'_id': str(result.inserted_id)}
 
     async def find_by_query(self, query: dict) -> dict:
         if '_id' in query and isinstance(query["_id"],str):
             query["_id"] = ObjectId(query["_id"])
         result = await self.collection.find_one(query)
+        self.parse_id(result)
         return result
 
 
