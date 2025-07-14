@@ -63,6 +63,15 @@ class MongoConnection:
         except Exception as e:
             raise e
 
+    async def delete(self, _id)-> dict:
+        if  isinstance(_id, str):
+           _id = ObjectId(_id)
+        result = await self.collection.delete_one({'_id': _id})
+
+        if result.deleted_count == 1:
+            return {"status": "success", "message": "Documento eliminado correctamente."}
+        if result.deleted_count == 0:
+            return {"status": "error", "message": "Documento no encontrado."}
 
 
 
