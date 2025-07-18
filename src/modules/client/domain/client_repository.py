@@ -5,21 +5,21 @@ from src.modules.client.domain.client import Client
 
 class ClientRepository(ABC):
     @abstractmethod
-    def get_all(self) -> List[Client]:
+    async def get_all(self) -> List[Client]:
         pass
 
     @abstractmethod
-    def get_by_id(self, identification: PyObjectId) -> Optional[Client]:
+    async def get_by_id(self, identification: PyObjectId) -> Optional[Client]:
         pass
 
     @abstractmethod
-    def create(self, client: Client) -> Client:
+    async def create(self, client: Client) -> Client:
         pass
 
     @abstractmethod
-    def update(self, identification: PyObjectId, client:Client, update_field:list[str]) -> Optional[Client]:
+    async def update(self, identification: PyObjectId, client:Client, update_field:list[str]) -> Optional[Client]:
         pass
 
     @abstractmethod
-    def delete(self, identification: PyObjectId) -> bool:
+    async def delete(self, identification: PyObjectId) -> bool:
         pass
