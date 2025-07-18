@@ -49,30 +49,37 @@ class MongoConnection:
             "results": docs
         }
 
-    async def create(self, inserted_data : dict[str,Any]) -> dict :
+    async def create(self, inserted_data : dict[str,Any]) -> str :
         result = await self.collection.insert_one(inserted_data)
-        return {'_id': str(result.inserted_id)}
+        return str(result.inserted_id)
 
-    async def find_by_query(self, query: dict) -> dict:
-        try:
+    async def find_one(self, query: dict) -> dict:
             if '_id' in query and isinstance(query["_id"],str):
                 query["_id"] = ObjectId(query["_id"])
             result = await self.collection.find_one(query)
             self.parse_id(result)
             return result
-        except Exception as e:
-            raise e
 
-    async def delete(self, _id)-> dict:
+    async def delete(self, _id):
         if  isinstance(_id, str):
            _id = ObjectId(_id)
         result = await self.collection.delete_one({'_id': _id})
 
-        if result.deleted_count == 1:
-            return {"status": "success", "message": "Documento eliminado correctamente."}
         if result.deleted_count == 0:
-            return {"status": "error", "message": "Documento no encontrado."}
+            raise ValueError ("status error")
+
+    async def update(self, document: dict, _id, fields: list[str]):
+
+        if isinstance(_id, str):
+            _id = ObjectId(_id)
 
 
+        if len(fields) <= 0:
+            raise ValueError("no keys to update!")
 
-
+        new_document = {}
+        for key in document.keys():
+            if key in fields:
+                new_document[key] = document[key]
+        await self.collection.update_one({'_id': _id}, {'$set': new_document})
+        return new_document
