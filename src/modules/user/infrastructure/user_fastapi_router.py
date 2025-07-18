@@ -15,8 +15,8 @@ def get_user_service():
 async def create_user(user : User,service: UserService = Depends(get_user_service)):
     try:
      return await service.create(user)
-    except UserCreationError:
-        raise HTTPException(status_code=404, detail=f"Error creating {user}")
+    except UserCreationError as e:
+        raise HTTPException(status_code=400, detail=f"Error creating {e}")
 @user_routes.get('/get/users')
 async def get_users(service: UserService = Depends(get_user_service)):
     try:
