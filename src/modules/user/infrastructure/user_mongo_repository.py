@@ -12,8 +12,8 @@ class UserMongoRepository(UserRepository):
         try:
             async with MongoConnection('users') as mongo:
                 _id = await mongo.create(user.model_dump())
-                user_created = await mongo.find_one(_id)
-                return user_created
+                user.id = _id
+                return user
         except UserCreationError as e:
             raise e
 
