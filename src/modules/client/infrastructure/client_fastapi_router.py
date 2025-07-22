@@ -3,7 +3,7 @@ from src.modules.client.application.client_service_impl import ClientServiceImpl
 from src.modules.client.domain.client import Client
 from src.modules.client.infrastructure.client_mongo_repository import ClientMongoRepository
 
-class HttpServiceRouter:
+class HttpClientRouter:
     def __init__(self):
         self.service = ClientServiceImplementation(ClientMongoRepository())
         self.router = APIRouter(
@@ -29,7 +29,7 @@ class HttpServiceRouter:
             except HTTPException as e:
                 raise HTTPException(status_code=404) from e
 
-        @self.router.post('/')
+        @self.router.post('/',status_code=201)
         async def create(client: Client):
             try:
                 return await self.service.create(client)
@@ -50,6 +50,6 @@ class HttpServiceRouter:
             except HTTPException as e:
                 raise HTTPException(status_code=404) from e
 
-
+client_routes = HttpClientRouter().router
 
 

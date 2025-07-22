@@ -3,6 +3,8 @@ from src.modules.service.application.service_service_impl import ServiceImplemen
 from src.modules.service.domain.service import Service
 from src.modules.service.infrastructure.service_mongo_repository import ServiceMongoRepository
 
+
+
 class HttpServiceRouter:
     def __init__(self):
         self.service = ServiceImplementation(ServiceMongoRepository())
@@ -29,7 +31,7 @@ class HttpServiceRouter:
             except HTTPException as e:
                 raise HTTPException(status_code=404) from e
 
-        @self.router.post('/')
+        @self.router.post('/', status_code=201)
         async def create(service: Service):
             try:
                 return await self.service.create(service)
@@ -50,6 +52,6 @@ class HttpServiceRouter:
             except HTTPException as e:
                 raise HTTPException(status_code=404) from e
 
-
+services_routes = HttpServiceRouter().router
 
 
