@@ -1,50 +1,55 @@
-
-
-from fastapi import APIRouter, Depends, HTTPException
-
+from fastapi import APIRouter, HTTPException
 from src.modules.client.application.client_service_impl import ClientServiceImplementation
 from src.modules.client.domain.client import Client
 from src.modules.client.infrastructure.client_mongo_repository import ClientMongoRepository
 
-client_routes = APIRouter(tags=["Client"])
+class HttpServiceRouter:
+    def __init__(self):
+        self.service = ClientServiceImplementation(ClientMongoRepository())
+        self.router = APIRouter(
+            prefix="/clients",
+            tags=["Client"],
+            responses={404: {"Message": "Not found"}}
+        )
+        self.register_routes()
 
-def get_service():
-    repository = ClientMongoRepository()
-    return ClientServiceImplementation(repository)
+    def register_routes(self):
 
-@client_routes.post('/client/create')
-async def create(client : Client, service : ClientServiceImplementation = Depends(get_service) ):
-    try:
-        return await service.create(client)
-    except HTTPException as e:
-        raise HTTPException(status_code=400) from e
+        @self.router.get('/')
+        async def get_all():
+            try:
+                return await self.service.get_all()
+            except HTTPException as e:
+                raise HTTPException(status_code=404) from e
 
-@client_routes.get('/clients')
-async def get_all(service : ClientServiceImplementation = Depends(get_service)):
-    try:
-        return await service.get_all()
-    except HTTPException as e:
-        raise HTTPException(status_code=404) from e
+        @self.router.get('/{id}')
+        async def get_by_id(_id):
+            try:
+                return await self.service.get_by_id(_id)
+            except HTTPException as e:
+                raise HTTPException(status_code=404) from e
 
-@client_routes.get('/client/{id}')
-async def get_by_id(_id , service : ClientServiceImplementation = Depends(get_service)):
-    try:
-        return await service.get_by_id(_id)
-    except HTTPException as e:
-        raise HTTPException(status_code=404) from e
-@client_routes.delete('/client/delete/{id}')
-async def delete(_id,service : ClientServiceImplementation = Depends(get_service)):
-    try :
-        return await service.delete(_id)
-    except HTTPException as e:
-        raise HTTPException(status_code=404) from e
+        @self.router.post('/')
+        async def create(client: Client):
+            try:
+                return await self.service.create(client)
+            except HTTPException as e:
+                raise HTTPException(status_code=400) from e
 
-@client_routes.put('/update/{id}')
-async def update(client: Client, _id ,update_fields : list[str], service : ClientServiceImplementation = Depends(get_service)):
-    try:
-        return await service.update(_id, client, update_fields)
-    except HTTPException as e:
-        raise HTTPException(status_code=404) from e
+        @self.router.put('/{id}')
+        async def update(client: Client, _id, update_fields: list[str]):
+            try:
+                return await self.service.update(_id, client, update_fields)
+            except HTTPException as e:
+                raise HTTPException(status_code=404) from e
+
+        @self.router.delete('/{id}')
+        async def delete(_id):
+            try:
+                return await self.service.delete(_id)
+            except HTTPException as e:
+                raise HTTPException(status_code=404) from e
+
 
 
 
