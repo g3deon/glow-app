@@ -3,7 +3,7 @@ from typing import Optional,List
 from src.lib.py_object_id import PyObjectId
 from src.modules.service.domain.service import Service
 
-class Service_Repository(ABC):
+class ServiceRepository(ABC):
 
     @abstractmethod
     async def get_all(self) -> List[Service]:
