@@ -19,5 +19,5 @@ class AuthServiceImpl:
         verify_password =  PassswordFunctions.verify_password(password,user_finded['hashed_password'])
         if not verify_password:
             raise  AuthCredentialsError
-        return await self.token_repository.generate_token(dict(user_finded))
+        return await self.token_repository.generate_token(str(user_finded['id']))
 

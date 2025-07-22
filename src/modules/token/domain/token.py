@@ -11,4 +11,4 @@ class Token(BaseModel):
   jti: Optional[int] = None
   exp: int
   iat: Optional[datetime] = Field(default_factory=utc_now)
-  data: dict
+  sub: str
