@@ -4,7 +4,7 @@ from src.lib.py_object_id import PyObjectId
 
 
 class Service(BaseModel):
-    id: PyObjectId
+    id: PyObjectId = Field(default=None)
     name: str = Field(...,min_length=3, max_length=30)
     description: str = Field(min_length=10, max_length=1000)
     price: float = Field(..., ge=0)
