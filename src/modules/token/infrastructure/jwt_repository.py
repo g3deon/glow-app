@@ -10,7 +10,7 @@ EXP = int(os.getenv('EXPIRATION'))
 ALGORITHM = os.getenv('ALGORITHM')
 SECRET = os.getenv('SECRET_KEY')
 
-class JWT2Repository(TokenRepository):
+class JWTRepository(TokenRepository):
 
     async def generate_token(self, _id: str) -> str:
         data = dict(Token(exp=EXP, sub=_id))

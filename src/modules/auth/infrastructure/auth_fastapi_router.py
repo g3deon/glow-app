@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from src.modules.auth.application.auth_service_impl import AuthServiceImpl
 from src.modules.auth.domain.auth_errors import AuthCredentialsError
-from src.modules.token.infrastructure.jwt_repository import JWT2Repository
+from src.modules.token.infrastructure.jwt_repository import JWTRepository
 from src.modules.user.infrastructure.user_mongo_repository import UserMongoRepository
 
 
 def get_service():
     user_rep = UserMongoRepository()
-    token_rep = JWT2Repository()
+    token_rep = JWTRepository()
     return AuthServiceImpl(user_rep, token_rep)
 
 auth_routes = APIRouter(tags=["auth"])
