@@ -4,7 +4,7 @@ from src.lib.py_object_id import PyObjectId
 from src.modules.category.domain.category_repository import CategoryRepository
 from src.modules.category.domain.category import Category
 
-class CategoryServiceImplementation:
+class CategoryServiceImpl:
     def __init__(self, category_repository: CategoryRepository):
         self.category_repository = category_repository
 
