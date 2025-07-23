@@ -68,6 +68,8 @@ class MongoConnection:
         if result.deleted_count == 0:
             raise ValueError ("status error")
 
+        return True
+
     async def update(self, document: dict, _id, fields: list[str]):
 
         if isinstance(_id, str):
