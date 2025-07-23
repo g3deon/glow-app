@@ -2,7 +2,7 @@ from src.lib.py_object_id import PyObjectId
 from src.modules.client.domain.client_repository import ClientRepository
 from src.modules.client.domain.client import Client
 
-class ClientServiceImplementation:
+class ClientServiceImpl:
     def __init__(self, client_repository: ClientRepository):
         self.client_repository = client_repository
 

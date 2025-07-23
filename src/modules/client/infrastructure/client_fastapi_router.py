@@ -1,11 +1,11 @@
 from fastapi import APIRouter, HTTPException
-from src.modules.client.application.client_service_impl import ClientServiceImplementation
+from src.modules.client.application.client_service_impl import ClientServiceImpl
 from src.modules.client.domain.client import Client
 from src.modules.client.infrastructure.client_mongo_repository import ClientMongoRepository
 
 class HttpClientRouter:
     def __init__(self):
-        self.service = ClientServiceImplementation(ClientMongoRepository())
+        self.service = ClientServiceImpl(ClientMongoRepository())
         self.router = APIRouter(
             prefix="/clients",
             tags=["Client"],
