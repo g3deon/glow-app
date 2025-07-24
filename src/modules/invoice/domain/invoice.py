@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 from src.lib.py_object_id import PyObjectId
 
 class Invoice(BaseModel):
-    id: PyObjectId
+    id: PyObjectId = Field(default=None)
     client_id: PyObjectId
     date: datetime
     services: list[PyObjectId]
