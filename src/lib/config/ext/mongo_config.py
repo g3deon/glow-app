@@ -21,6 +21,17 @@ class MongoConnection:
         parsed_id = entity['id'] = str(entity.pop('_id'))
         return parsed_id
 
+    @classmethod
+    def convert_objids_to_str(cls,data):
+        if isinstance(data, dict):
+            return {k: cls.convert_objids_to_str(v) for k, v in data.items()}
+        elif isinstance(data, list):
+            return [cls.convert_objids_to_str(item) for item in data]
+        elif isinstance(data, ObjectId):
+            return str(data)
+        else:
+            return data
+
     async def __aenter__(self):
         return self
 
@@ -42,8 +53,9 @@ class MongoConnection:
         docs = await cursor.to_list(length=page_size)
         total_pages = (total_documents + page_size - 1 ) // page_size
 
-        for doc in docs:
+        for i, doc in enumerate(docs):
             self.parse_id(doc)
+            docs[i] = self.convert_objids_to_str(doc)
         return {
             "total_pages": total_pages,
             "results": docs
@@ -58,6 +70,7 @@ class MongoConnection:
                 query["_id"] = ObjectId(query["_id"])
             result = await self.collection.find_one(query)
             self.parse_id(result)
+            result = self.convert_objids_to_str(result)
             return result
 
     async def delete(self, _id):
