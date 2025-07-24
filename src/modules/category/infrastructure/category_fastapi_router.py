@@ -49,12 +49,10 @@ class HttpCategoryRouter:
             except Exception as e:
                 raise HTTPException(status_code=400) from e
 
-        @self.router.delete('/{id}')
+        @self.router.delete('/{id}', status_code=204,)
         async def delete(_id):
             try:
-                deleted = await self.service.delete(_id)
-                if deleted:
-                    return status.HTTP_204_NO_CONTENT
+                return await self.service.delete(_id)
             except HTTPException as e:
                 raise HTTPException(status_code=404) from e
             except Exception as e:
